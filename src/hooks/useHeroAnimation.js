@@ -41,14 +41,20 @@ export default function useHeroAnimation() {
       if (burger) burger.classList.add('assembled')
     }, 2200)
 
-    const data = ings.map((el) => {
+    const data = ings.map((el, i) => {
       const s = el.style
+      const depth = parseFloat(el.getAttribute('data-depth')) || 0.5
       return {
         el,
         dx: parseFloat(s.getPropertyValue('--dx')) || 0,
         dy: parseFloat(s.getPropertyValue('--dy')) || 0,
         dr: parseFloat(s.getPropertyValue('--dr')) || 0,
-        depth: parseFloat(el.getAttribute('data-depth')) || 0.5,
+        depth,
+        // Continuous organic drift so pieces feel alive at rest (not a uniform
+        // bob). Deeper pieces drift slower + wider; each has its own phase.
+        phase: i * 1.7,
+        spd: 0.22 + depth * 0.18,
+        amp: 9 + depth * 15,
       }
     })
 
@@ -70,26 +76,36 @@ export default function useHeroAnimation() {
     window.addEventListener('pointermove', onMove, { passive: true })
     stage.addEventListener('pointerleave', onLeave)
 
+    const t0 = performance.now()
     const loop = () => {
       raf = requestAnimationFrame(loop)
       if (!visible) return
-      f += (tf - f) * 0.12
-      mx += (tmx - mx) * 0.06
-      my += (tmy - my) * 0.06
+      const t = (performance.now() - t0) / 1000
+      // Slower, softer easing → less rigid, more weighty.
+      f += (tf - f) * 0.09
+      mx += (tmx - mx) * 0.045
+      my += (tmy - my) * 0.045
       for (let i = 0; i < data.length; i++) {
         const d = data[i]
         const k = f * d.depth * 1.2
-        const x = d.dx * k + mx * 26 * d.depth
-        const y = d.dy * k + my * 20 * d.depth
-        const rot = d.dr * k + mx * 4 * d.depth
+        // continuous organic drift (each piece its own phase/speed/amplitude)
+        const dxo = Math.sin(t * d.spd + d.phase) * d.amp
+        const dyo = Math.cos(t * d.spd * 0.82 + d.phase) * d.amp * 0.7
+        const dro = Math.sin(t * d.spd * 0.6 + d.phase) * 2.2
+        // gentler mouse drift than before (26/20/4 → 18/15/3)
+        const x = d.dx * k + mx * 18 * d.depth + dxo
+        const y = d.dy * k + my * 15 * d.depth + dyo
+        const rot = d.dr * k + mx * 3 * d.depth + dro
         d.el.style.transform =
           'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px) rotate(' +
           rot.toFixed(1) + 'deg) scale(' + (1 - 0.12 * f).toFixed(3) + ')'
       }
       if (burger) {
+        // slow idle sway + stronger tilt toward the cursor, grounded by scroll lift
+        const sway = Math.sin(t * 0.5) * 4
         burger.style.transform =
-          'translate(' + (mx * 10).toFixed(1) + 'px,' + (my * 7 - f * 42).toFixed(1) +
-          'px) rotate(' + (mx * 3 - f * 4).toFixed(2) + 'deg) scale(' + (1 - 0.05 * f).toFixed(3) + ')'
+          'translate(' + (mx * 13).toFixed(1) + 'px,' + (my * 9 - f * 42 + sway).toFixed(1) +
+          'px) rotate(' + (mx * 3.6 - f * 4).toFixed(2) + 'deg) scale(' + (1 - 0.05 * f).toFixed(3) + ')'
       }
     }
 

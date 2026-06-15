@@ -55,7 +55,6 @@ export default function Home() {
           <div className="ingredient deep" data-depth="0.45" style={{ top: '22%', right: '10%', '--rot': '10deg', '--bob': '8.5s', '--dx': '160px', '--dy': '-90px', '--dr': '55deg', '--d': '.13s' }}><div className="ing-inner"><img src="/assets/ingredients/ingredient-04.png" alt="" loading="lazy" decoding="async" /></div></div>
           <div className="ingredient" data-depth="0.8" style={{ bottom: '30%', left: '8%', '--rot': '6deg', '--bob': '7.5s', '--dx': '-160px', '--dy': '110px', '--dr': '-60deg', '--d': '.21s' }}><div className="ing-inner"><img src="/assets/ingredients/ingredient-05.png" alt="" loading="lazy" decoding="async" /></div></div>
           <div className="ingredient deep" data-depth="0.5" style={{ bottom: '34%', right: '13%', '--rot': '-12deg', '--bob': '9s', '--dx': '150px', '--dy': '120px', '--dr': '60deg', '--d': '.29s' }}><div className="ing-inner"><img src="/assets/ingredients/ingredient-03.png" alt="" loading="lazy" decoding="async" /></div></div>
-          <div className="ingredient" data-depth="0.65" style={{ top: '40%', right: '6%', '--rot': '18deg', '--bob': '7s', '--dx': '180px', '--dy': '0px', '--dr': '70deg', '--d': '.37s' }}><div className="ing-inner"><img src="/assets/ingredients/ingredient-06.png" alt="" loading="lazy" decoding="async" /></div></div>
 
           <div className="hero-stage" id="hero-stage">
             <div className="hero-glow"></div>
